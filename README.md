@@ -16,7 +16,7 @@ The API is quite simple:
 
 `var endecrypt = require("endecrypt");`
 
-### One-shot usage for small data:
+#### One-shot usage for small data:
 
 * ##### endecrypt.encrypt(buf:Buffer, passphrase:string[, options:Object], callback:function(err:Error, data:Buffer))  
   Encrypts the specified buffer with the given passphrase and returns the result
@@ -24,7 +24,7 @@ The API is quite simple:
 * ##### endecrypt.decrypt(buf:Buffer, passphrase:string[, options:Object], callback:function(err:Error, data:Buffer))  
   Decrypts the specified buffer with the given passphrase and returns the result
     
-### Streaming usage for possibly large data (generally recommended):
+#### Streaming usage for possibly large data (generally recommended):
 
 * ##### endecrypt.createEncrypt(passphrase:string[, options:Object]):endecrypt.Encrypt  
   Creates a ready-to-pipe encrypting ([transforming](http://nodejs.org/api/stream.html#stream_class_stream_transform_1)) stream.
@@ -33,7 +33,7 @@ The API is quite simple:
   Creates a ready-to-pipe decrypting ([transforming](http://nodejs.org/api/stream.html#stream_class_stream_transform_1)) stream.
   
 #### Available options:  
-* ##### rounds    
+* ##### rounds      
   Number of PBKDF2 (HMAC-SHA1) rounds to perform, defaults to 100000.
     
 Command line
