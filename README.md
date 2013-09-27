@@ -4,7 +4,7 @@ Password based en-/decryption of arbitrary data with and for node.js.
 
 Features
 --------
-* Uses [node's crypto module](http://nodejs.org/api/crypto.html) and is therefore pretty fast
+* Utilizes PBKDF2 and AES256 through [node's crypto module](http://nodejs.org/api/crypto.html) and is therefore pretty fast
 * Encrypted outputs are indistinguishable from random data
 * Works with arbitrary buffer contents
 * Provides simple streaming and one-shot APIs
