@@ -1,0 +1,25 @@
+{
+    "name": "endecrypt",
+    "description": "Password based en-/decryption of arbitrary data with PBKDF2 and AES256 including a simple API and command line utilities.",
+    "version": "1.0.0",
+    "author": "Daniel Wirtz <dcode@dcode.io>",
+    "main": "./src/endecrypt.js",
+    "bin": {
+        "encrypt": "./bin/encrypt",
+        "decrypt": "./bin/decrypt"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dcodeIO/endecrypt.git"
+    },
+    "bugs": {
+        "url": "https://github.com/dcodeIO/endecrypt/issues"
+    },
+    "engines": {
+        "node": ">=0.8"
+    },
+    "dependencies": {
+        "keypress": "~0.2",
+        "ascli": "latest"
+    }
+}
