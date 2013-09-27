@@ -33,7 +33,7 @@ The API is quite simple:
   Creates a ready-to-pipe decrypting ([transforming](http://nodejs.org/api/stream.html#stream_class_stream_transform_1)) stream.
   
 #### Available options:  
-* ##### rounds      
+* **rounds**  
   Number of PBKDF2 (HMAC-SHA1) rounds to perform, defaults to 100000.
     
 Command line
