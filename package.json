@@ -1,6 +1,6 @@
 {
     "name": "endecrypt",
-    "description": "Password based en-/decryption of arbitrary data with PBKDF2 and AES256 including a simple API and command line utilities.",
+    "description": "Password based en-/decryption of arbitrary data with and for node.js.",
     "version": "1.0.0",
     "author": "Daniel Wirtz <dcode@dcode.io>",
     "main": "./src/endecrypt.js",
