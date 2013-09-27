@@ -112,6 +112,9 @@ Encrypt.prototype._flush = function(done) {
     done();
 };
 
+/**
+ * @alias Encrypt
+ */
 endecrypt.Encrypt = Encrypt;
 
 /**
@@ -205,7 +208,7 @@ Decrypt.prototype._flush = function(done) {
 };
 
 /**
- * @alias {Decrypt}
+ * @alias Decrypt
  */
 endecrypt.Decrypt = Decrypt;
 
@@ -272,5 +275,11 @@ endecrypt.decrypt = function(buf, passphrase, options, callback) {
     });
     dec.end(buf);
 };
+
+/**
+ * CLI utilities.
+ * @type {Object.<string,*>}
+ */
+endecrypt.cli = require("./cli.js");
 
 module.exports = endecrypt;
