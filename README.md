@@ -46,6 +46,11 @@ passphrase if it is not specified as an argument. The number of PBKDF2 rounds de
 
 That's pretty much it.
 
+Examples
+--------
+The file **README.md.crypt** has been generated through `encrypt README.md -p=123 > README.md.crypt` and can be
+decrypted using `decrypt README.md.crypt -p=123`.
+
 Considerations
 --------------
 endecrypt uses node's stock PBKDF2 implementation which uses HMAC-SHA1 to derive keys. Thus, the effective entropy is
