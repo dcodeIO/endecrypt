@@ -16,7 +16,8 @@
 
 var crypto = require("crypto"),
     stream = require("stream"),
-    util   = require("util");
+    util   = require("util"),
+    PSON   = require("pson");
 
 /**
  * endecrypt namespace.
@@ -81,7 +82,8 @@ Encrypt.prototype._transform = function(chunk, encoding, done) {
     if (this.cipher === null) { // Initialize
         crypto.randomBytes(endecrypt.SALT_LENGTH, function(err, salt) {
             if (err) {
-                throw(err);
+                this.emit("error", err);
+                return;
             }
             crypto.pbkdf2(this.passphrase, salt, this.options.rounds, 48, function(err, keyiv) {
                 if (err) {
@@ -153,11 +155,10 @@ util.inherits(Decrypt, stream.Transform);
  */
 Decrypt.prototype._gather = function(chunk) {
     var remain = endecrypt.SALT_LENGTH - this.salt.length;
-    if (chunk.length < remain) { // Append additional salt bytes
+    if (chunk.length < remain) { // Append additional salt bytes and wait for more
         this.salt = Buffer.concat([this.salt, chunk]);
         return null;
-    }
-    // Else fill salt and set up cipher
+    } // Else fill and continue
     this.salt = Buffer.concat([this.salt, chunk.slice(0, remain)]);
     return chunk.slice(remain);
 };
@@ -183,14 +184,26 @@ Decrypt.prototype._transform = function(chunk, encoding, done) {
         // a plain JavaScript implementation would be much slower and a C module would need a compile step. Any ideas?
         crypto.pbkdf2(this.passphrase, this.salt, this.options.rounds, 48, function(err, keyiv) {
             if (err) {
-                throw(err);
+                this.emit("error", err);
+                return;
             }
+            this.passphrase = null;
             this.cipher = crypto.createDecipheriv("aes256", keyiv.slice(0, 32), keyiv.slice(32));
-            this.push(this.cipher.update(chunk));
+            try {
+                this.push(this.cipher.update(chunk));
+            } catch (ex) {
+                this.emit("error", ex);
+                return;
+            }
             done();
         }.bind(this));
     } else {
-        this.push(this.cipher.update(chunk));
+        try {
+            this.push(this.cipher.update(chunk));
+        } catch (ex) {
+            this.emit("error", ex);
+            return;
+        }
         done();
     }
 };
@@ -202,7 +215,12 @@ Decrypt.prototype._transform = function(chunk, encoding, done) {
  */
 Decrypt.prototype._flush = function(done) {
     if (this.cipher !== null) {
-        this.push(this.cipher.final());
+        try {
+            this.push(this.cipher.final());
+        } catch (ex) {
+            this.emit("error", ex);
+            return;
+        }
     }
     done();
 };
@@ -250,6 +268,26 @@ endecrypt.encrypt = function(buf, passphrase, options, callback) {
 };
 
 /**
+ * Encrypts any JSON value using the specified passphrase.
+ * @param {*} data Data to encrypt
+ * @param {string} passphrase Passphrase
+ * @param {Object.<string,*>|function(Error, Buffer=)} options Options
+ * @param {function(Error, Buffer=)=} callback Callback
+ */
+endecrypt.encryptStore = function(data, passphrase, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = null;
+    }
+    var pair = new PSON.StaticPair();
+    try {
+        endecrypt.encrypt(pair.encode(data).toBuffer(), passphrase, options, callback);
+    } catch (err) {
+        process.nextTick(callback.bind(this, err));
+    }
+};
+
+/**
  * Decrypts a buffer using the specified passphrase.
  * This is a convenience wrapper around a proper stream and should not be used with large data.
  * @param {Buffer} buf Buffer to decrypt
@@ -274,6 +312,32 @@ endecrypt.decrypt = function(buf, passphrase, options, callback) {
         callback(err);
     });
     dec.end(buf);
+};
+
+/**
+ * Decrypts a buffer to a JSON value using the specified passphrase.
+ * @param {Buffer} buf Buffer to decrypt
+ * @param {string} passphrase Passphrase
+ * @param {Object.<string,*>|function(Error, *=)} options Options
+ * @param {function(Error, *=)=} callback Callback
+ */
+endecrypt.decryptStore = function(buf, passphrase, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = null;
+    }
+    endecrypt.decrypt(buf, passphrase, options, function(err, data) {
+        if (err) {
+            callback(err);
+            return;
+        }
+        var pair = new PSON.StaticPair();
+        try {
+            callback(null, pair.decode(data));
+        } catch (err) {
+            callback(err);
+        }
+    });
 };
 
 /**
