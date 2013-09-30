@@ -333,7 +333,8 @@ endecrypt.decryptStore = function(buf, passphrase, options, callback) {
         }
         var pair = new PSON.StaticPair();
         try {
-            callback(null, pair.decode(data));
+            data = pair.decode(data);
+            callback(null, data);
         } catch (err) {
             callback(err);
         }
