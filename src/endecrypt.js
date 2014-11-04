@@ -90,6 +90,7 @@ Encrypt.prototype._transform = function(chunk, encoding, done) {
                     throw(err);
                 }
                 this.passphrase = null;
+                if (!Buffer.isBuffer(keyiv)) keyiv = new Buffer(keyiv, "binary"); // node 0.8
                 this.cipher = crypto.createCipheriv("aes256", keyiv.slice(0, 32), keyiv.slice(32));
                 this.push(salt);
                 this.push(this.cipher.update(chunk));
@@ -188,6 +189,7 @@ Decrypt.prototype._transform = function(chunk, encoding, done) {
                 return;
             }
             this.passphrase = null;
+            if (!Buffer.isBuffer(keyiv)) keyiv = new Buffer(keyiv, "binary"); // node 0.8
             this.cipher = crypto.createDecipheriv("aes256", keyiv.slice(0, 32), keyiv.slice(32));
             try {
                 this.push(this.cipher.update(chunk));
