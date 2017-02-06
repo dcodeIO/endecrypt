@@ -6,7 +6,7 @@ var util = {};
 util.setRawMode = function(mode) {
     if (process.stdin.setRawMode) {
         process.stdin.setRawMode(mode);
-    } else {
+    } else if (process.stdin.isTTY) {
         tty.setRawMode(mode);
     }
 };
