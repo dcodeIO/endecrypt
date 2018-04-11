@@ -183,7 +183,7 @@ Decrypt.prototype._transform = function(chunk, encoding, done) {
     if (this.cipher === null) { // Set up
         // FIXME: node's crypto module uses HMAC-SHA1 so deriving a 256 bit key and 128 bit iv is suboptimal. However,
         // a plain JavaScript implementation would be much slower and a C module would need a compile step. Any ideas?
-        crypto.pbkdf2(this.passphrase, this.salt, this.options.rounds, 48, function(err, keyiv) {
+        crypto.pbkdf2(this.passphrase, this.salt, this.options.rounds, 48, "sha1", function(err, keyiv) {
             if (err) {
                 this.emit("error", err);
                 return;
